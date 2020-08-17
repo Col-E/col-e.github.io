@@ -1,0 +1,17 @@
+<svg width="200.00000000000003" height="170" xmlns="http://www.w3.org/2000/svg">
+ <!-- Created with Method Draw - http://github.com/duopixel/Method-Draw/ -->
+ <g>
+  <title>background</title>
+  <rect fill="#fff" id="canvas_background" height="172" width="202" y="-1" x="-1"/>
+ </g>
+ <g>
+  <title>Layer 1</title>
+  <rect id="svg_1" height="142.81819" width="196" y="25.18181" x="2" stroke-opacity="null" stroke-width="0" stroke="#000" fill="#000000"/>
+  <rect id="svg_8" height="21.71429" width="196.28572" y="1.8" x="1.57144" stroke-opacity="null" stroke-width="0" stroke="#000" fill="#9b9b9b"/>
+  <rect id="svg_4" height="14.54545" width="10.45454" y="5.02597" x="183.96753" stroke-opacity="null" stroke-width="0" stroke="#000" fill="#3f3f3f"/>
+  <rect id="svg_6" height="14.54545" width="10.45454" y="5.02597" x="169.45223" stroke-opacity="null" stroke-width="0" stroke="#000" fill="#3f3f3f"/>
+  <rect id="svg_7" height="14.54545" width="10.45454" y="5.47773" x="155.52336" stroke-opacity="null" stroke-width="0" stroke="#000" fill="#3f3f3f"/>
+  <text font-weight="bold" transform="matrix(7.36519, 0, 0, 6.76184, -1130.27, -805.062)" xml:space="preserve" text-anchor="start" font-family="'Trebuchet MS', Gadget, sans-serif" font-size="13" id="svg_11" y="137.14121" x="154.49571" stroke-opacity="null" stroke-width="0" stroke="#000" fill="#ffffff">C:\_</text>
+  <rect id="svg_13" height="8.25974" width="22.45454" y="5.47773" x="4.72657" stroke-opacity="null" stroke-width="0" stroke="#000" fill="#3f3f3f"/>
+ </g>
+</svg>

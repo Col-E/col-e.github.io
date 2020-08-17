@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>404: Page not found</title>
+		<meta name="viewport" content="width=800">
+		<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+		<script src="js/terminal.js"></script>
+		<script src="js/drag.js"></script>
+		<link rel="stylesheet" href="css/wincmd.css">		
+		<style>
+html { 
+	background-color: rgb(40, 41, 43);  /* #28292b */
+}
+pre {
+	margin: 0px;
+	font-family: monospace;
+}
+* { 
+	box-sizing: border-box; 
+}
+		</style>
+	</head>
+	<body>
+	
+	
+	<div class="container">
+		<div id ="twin" class="window">
+			<div id="twin-header" class="header">
+				<img src="css/assets/cmd.svg" class="cmdicon"><p>C:\Windows\system32\cmd.exe</p>
+			</div>
+			<pre><div id="wrap" class="resizable"></div></pre>
+		</div>
+	</div>
+	
+	
+	
+	
+	</body>
+<script>
+var terminal = new Terminal();
+terminal.setTextColor("#f0f1f2");
+terminal.setWidth("100%");
+terminal.setHeight("100%");
+terminal.blinkingCursor(true);
+terminal
+var terminalDom = terminal.html;
+document.getElementById("wrap").appendChild(terminalDom);
+dragElement(document.getElementById("twin"));
+
+function init() {
+	terminal.print    ("    ██╗  ██╗ ██████╗ ██╗  ██╗");
+	terminal.print    ("    ██║  ██║██╔═████╗██║  ██║");
+	terminal.print    ("    ███████║██║██╔██║███████║");
+	terminal.print    ("    ╚════██║████╔╝██║╚════██║");
+	terminal.print    ("         ██║╚██████╔╝     ██║");
+	terminal.print    ("         ╚═╝ ╚═════╝      ╚═╝");
+	terminal.printHtml("         <b><u>Page not found</u></b>");
+	terminal.print    ("The specified page does not exist.");
+	terminal.print(" ");
+	help();
+	terminal.print(" ");
+}
+
+function help() {
+	terminal.printHtml("<b><u>Commands</u></b>");
+	terminal.printHtml(" ╠═╤ <u>home</u>");
+	terminal.print    (" ║ └ Opens the root directory");
+	terminal.printHtml(" ╚═╤ <u>help</u>");
+	terminal.print    ("   └ Prints recognized commands");
+}
+
+function loop() {
+	terminal.input("", function (input) {
+		terminal.print(" ");
+		switch(input) {
+		case "home":
+			terminal.print("Redirecting to root...");
+			window.location = '/';
+			break;
+		case "help":
+			help();
+			break;
+		default:
+			terminal.print("'" + input + "' is not recognizes as an internal or external command.");
+			break;
+		}
+		terminal.print(" ");
+		loop();
+	});
+}
+init();
+loop();
+</script>
+</html>
