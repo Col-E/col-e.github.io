@@ -4,48 +4,27 @@
 		<title>404: Page not found</title>
 		<meta name="viewport" content="width=800">
 		<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+		<!-- Host setup does NOT like it when links are relative... -->
 		<script src="https://www.coley.software/js/terminal.js"></script>
 		<script src="https://www.coley.software/js/drag.js"></script>
-		<link rel="stylesheet" href="https://www.coley.software/css/wincmd.css">		
+		<link rel="stylesheet" href="https://www.coley.software/css/wincmd.css">
 		<style>
 html { 
 	background-color: rgb(40, 41, 43);  /* #28292b */
 }
-pre {
-	margin: 0px;
-	font-family: monospace;
-}
-* { 
-	box-sizing: border-box; 
-}
 		</style>
 	</head>
 	<body>
-	
-	
-	<div class="container">
-		<div id ="twin" class="window">
-			<div id="twin-header" class="header">
-				<img src="https://www.coley.software/css/assets/cmd.svg" class="cmdicon"><p>C:\Windows\system32\cmd.exe</p>
-			</div>
-			<pre><div id="wrap" class="resizable"></div></pre>
-		</div>
-	</div>
-	
-	
-	
-	
 	</body>
 <script>
-var terminal = new Terminal();
-terminal.setTextColor("#f0f1f2");
-terminal.setWidth("100%");
-terminal.setHeight("100%");
-terminal.blinkingCursor(true);
-terminal
-var terminalDom = terminal.html;
-document.getElementById("wrap").appendChild(terminalDom);
-dragElement(document.getElementById("twin"));
+var s = new System();
+var t = new Terminal(s);
+var terminal = new TerminalWindow("fourohfour", t);
+document.body.appendChild(terminal.window);
+dragElement(terminal.window)
+terminal.setMinWidth = "420px";
+terminal.setTitle = "C:\\Windows\\system32\\cmd.exe";
+terminal.setIcon("https://www.coley.software/css/assets/cmd.svg", '20px', null, '5px');
 
 function init() {
 	terminal.print    ("    ██╗  ██╗ ██████╗ ██╗  ██╗");
@@ -63,22 +42,17 @@ function init() {
 
 function help() {
 	terminal.printHtml("<b><u>Commands</u></b>");
-	terminal.printHtml(" ╠═╤ <u>home</u>");
-	terminal.print    (" ║ └ Opens the root directory");
-	terminal.printHtml(" ╚═╤ <u>help</u>");
-	terminal.print    ("   └ Prints recognized commands");
+	terminal.printHtml(" ╚═╤ <u>home</u>");
+	terminal.print    ("   └ Opens the root directory");
 }
 
 function loop() {
-	terminal.input("", function (input) {
+	terminal.prompt("", function (input) {
 		terminal.print(" ");
 		switch(input) {
 		case "home":
 			terminal.print("Redirecting to root...");
 			window.location = '/';
-			break;
-		case "help":
-			help();
 			break;
 		default:
 			terminal.print("'" + input + "' is not recognizes as an internal or external command.");

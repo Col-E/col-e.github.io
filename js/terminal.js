@@ -1,175 +1,241 @@
-/*! terminal.js v2.0 | (c) 2014 Erik Österberg | https://github.com/eosterberg/terminaljs */
+// WIP mock windows JS
+// (c) 2020 Matt Coley
 
-var Terminal = (function () {
-  var PROMPT_INPUT = 1, PROMPT_PASSWORD = 2, PROMPT_CONFIRM = 3
+const WINDOW_FONT = "arial",
+	WINDOW_HEADER_BG = "rgb(200, 200, 200)",
+	WINDOW_HEADER_FG = "black";
 
-  var fireCursorInterval = function (inputField, terminalObj) {
-    var cursor = terminalObj._cursor
-    setTimeout(function () {
-      if (inputField.parentElement && terminalObj._shouldBlinkCursor) {
-        cursor.style.visibility = cursor.style.visibility === 'visible' ? 'hidden' : 'visible'
-        fireCursorInterval(inputField, terminalObj)
-      } else {
-        cursor.style.visibility = 'visible'
-      }
-    }, 500)
-  }
+const PROMPT_INPUT = 1,
+	PROMPT_PASSWORD = 2,
+	PROMPT_CONFIRM = 3;
 
-  var firstPrompt = true;
-  promptInput = function (terminalObj, message, PROMPT_TYPE, callback) {
-    var shouldDisplayInput = (PROMPT_TYPE === PROMPT_INPUT)
-    var inputField = document.createElement('input')
+const BLINK_MS = 500;
 
-    inputField.style.position = 'absolute'
-    inputField.style.zIndex = '-100'
-    inputField.style.outline = 'none'
-    inputField.style.border = 'none'
-    inputField.style.opacity = '0'
-    inputField.style.fontSize = '0.2em'
+const KEY_ENTER = 13,
+	KEY_TAB = 9;
+	KEY_UP = 38,
+	KEY_DOWN = 40,
+	KEY_LEFT = 37,
+	KEY_RIGHT = 39;
 
-    terminalObj._inputLine.textContent = ''
-    terminalObj._input.style.display = 'block'
-    terminalObj.html.appendChild(inputField)
-    fireCursorInterval(inputField, terminalObj)
+// OS stuff
+class System {}
 
-    if (message.length) terminalObj.print(PROMPT_TYPE === PROMPT_CONFIRM ? message + ' (y/n)' : message)
+// Interaction with a given system
+class Terminal {
+	constructor(sys) {
+		this.sys = sys;
+	}
+}
 
-    inputField.onblur = function () {
-      terminalObj._cursor.style.display = 'none'
-    }
+// Base window logic 
+class Window {
+	constructor(id, cls) {
+		if (typeof(id) === 'string') {
+			this.id = id;
+		}
+		// Setup window title bar element
+		this.header = document.createElement('div');
+		this.header.className = "header";
+		if (typeof(id) == 'string') {
+			this.header.id = id + "-header";
+		}
+		this.header.style.padding = '5px';
+		this.header.style.background = WINDOW_HEADER_BG;
+		this.headerText = document.createElement('span');
+		this.headerIcon = document.createElement('span');
+		this.headerText.style.color = WINDOW_HEADER_FG;
+		this.headerText.style.pointerEvents = 'none';
+		this.headerText.className = 'title';
+		this.header.appendChild(this.headerIcon);
+		this.header.appendChild(this.headerText);
+		// Setup window content wrapper
+		this.contentWrapper = document.createElement('div');
+		this.contentWrapper.className = "content";
+		// Setup main window wrapper element
+		this.window = document.createElement('div');
+		this.window.className = cls;
+		this.window.id = id;
+		this.window.appendChild(this.header);
+		this.window.appendChild(this.contentWrapper);
+		this.window.style.position = 'absolute';
+		this.window.style.margin = '0';
+		this.window.style.border = "1px solid white";
+		this.window.style.fontFamily = WINDOW_FONT;
+	}
 
-    inputField.onfocus = function () {
-      inputField.value = terminalObj._inputLine.textContent
-      terminalObj._cursor.style.display = 'inline'
-    }
-
-    terminalObj.html.onclick = function () {
-      inputField.focus()
-    }
-
-    inputField.onkeydown = function (e) {
-      if (e.which === 37 || e.which === 39 || e.which === 38 || e.which === 40 || e.which === 9) {
-        e.preventDefault()
-      } else if (shouldDisplayInput && e.which !== 13) {
-        setTimeout(function () {
-          terminalObj._inputLine.textContent = inputField.value
-        }, 1)
-      }
-    }
-    inputField.onkeyup = function (e) {
-      if (PROMPT_TYPE === PROMPT_CONFIRM || e.which === 13) {
-        terminalObj._input.style.display = 'none'
-        var inputValue = inputField.value
-        if (shouldDisplayInput) terminalObj.print(inputValue)
-        terminalObj.html.removeChild(inputField)
-        if (typeof(callback) === 'function') {
-          if (PROMPT_TYPE === PROMPT_CONFIRM) {
-            callback(inputValue.toUpperCase()[0] === 'Y' ? true : false)
-          } else callback(inputValue)
-        }
-      }
-    }
-    if (firstPrompt) {
-      firstPrompt = false
-      setTimeout(function () { inputField.focus()  }, 50)
-    } else {
-      inputField.focus()
-    }
-  }
-
-  var TerminalConstructor = function (id) {
-    this.html = document.createElement('div')
-    this.html.className = 'Terminal'
-    if (typeof(id) === 'string') { this.html.id = id }
-
-    this._innerWindow = document.createElement('div')
-    this._output = document.createElement('p')
-    this._inputLine = document.createElement('span') //the span element where the users input is put
-    this._cursor = document.createElement('span')
-    this._input = document.createElement('p') //the full element administering the user input, including cursor
-
-    this._shouldBlinkCursor = true
-
-    this.print = function (message) {
-      var newLine = document.createElement('div')
-      newLine.textContent = message
-      this._output.appendChild(newLine)
-    }
+	setIcon(path, width, height, margin) {
+		this.headerIcon.innerHTML = '';
+		var img = document.createElement('img');
+		img.src = path;
+		if (width) img.style.width = width;
+		if (height) img.style.height = height;
+		if (margin) img.style.marginRight = margin;
+		this.headerIcon.appendChild(img);
+	}
 	
-	this.printHtml = function (message) {
-      var newLine = document.createElement('div')
-      newLine.innerHTML = message
-      this._output.appendChild(newLine)
-    }
+	set setTitle(title) { this.headerText.innerText = title; }
+	set setWidth(size) { // TODO: Using this on resizble children is wack
+		this.window.style.width = size;
+		this.contentWrapper.style.width = size;
+	}
+	set setHeight(size) { 
+		this.window.style.height = size;
+		this.contentWrapper.style.height = size;
+	}
+	set setMinWidth(size) { 
+		this.window.style.minWidth = size; 
+		this.contentWrapper.style.minWidth = size;
+	}
+	set setMinHeight(size) { 
+		this.window.style.minHeight = size;
+		this.contentWrapper.style.minWidth = size;
+	}
+}
 
-    this.input = function (message, callback) {
-      promptInput(this, message, PROMPT_INPUT, callback)
-    }
+class TerminalWindow extends Window {
+	isFirstPrompt = true;
+	blinkingEnabled = true;
 
-    this.password = function (message, callback) {
-      promptInput(this, message, PROMPT_PASSWORD, callback)
-    }
+	constructor(id, terminal) {
+		super(id, "terminal");
+		this.terminal = terminal;
+		this.input = document.createElement('p');
+		this.input.style.margin = '0';
+		this.output = document.createElement('p');
+		this.output.style.margin = '0';
+		this.ioWrapper = document.createElement('pre');
+		this.ioWrapper.appendChild(this.output);
+		this.ioWrapper.appendChild(this.input);
+		this.ioWrapper.style.padding = '10px';
+		this.ioWrapper.style.margin = '0';
+		this.contentWrapper.className = 'resizable';
+		this.inputLine = document.createElement('span');
+		this.cursor = document.createElement('span');
+		this.cursor.innerHTML = '0';
+		this.cursor.style.display = 'none';
+		this.input.appendChild(this.inputLine);
+		this.input.appendChild(this.cursor);
+		this.setTextColor = 'white';
+		this.setTextFont = 'monospace';
+		this.setBackgroundColor = "black";
+		// Add terminal stuff to base window
+		this.contentWrapper.appendChild(this.ioWrapper);
+	}
 
-    this.confirm = function (message, callback) {
-      promptInput(this, message, PROMPT_CONFIRM, callback)
-    }
+	print(message) {
+		var newLine = document.createElement('div');
+		newLine.textContent = message;
+		this.output.appendChild(newLine);
+	}
 
-    this.clear = function () {
-      this._output.innerHTML = ''
-    }
+	printHtml(message) {
+		var newLine = document.createElement('div');
+		newLine.innerHTML = message;
+		this.output.appendChild(newLine);
+	}
 
-    this.sleep = function (milliseconds, callback) {
-      setTimeout(callback, milliseconds)
-    }
+	prompt(message, callback)	{ this.promptInput(message, PROMPT_INPUT, callback); }
+	password(message, callback) { this.promptInput(message, PROMPT_PASSWORD, callback); }
+	confirm(message, callback)	{ this.promptInput(message, PROMPT_CONFIRM, callback); }
+	
+	promptInput(message, PROMPT_TYPE, callback) {
+		var shouldDisplayInput = (PROMPT_TYPE === PROMPT_INPUT);
+		var targetFieldHost = this.window;
+		var inputField = document.createElement('input');
+		inputField.style.position = 'absolute';
+		inputField.style.zIndex = '-100';
+		inputField.style.outline = 'none';
+		inputField.style.border = 'none';
+		inputField.style.opacity = '0';
+		inputField.style.fontSize = '12px';
+		// Setup the hidden input
+		this.inputLine.textContent = '';
+		this.input.display = 'block';
+		targetFieldHost.appendChild(inputField); // TODO: Can we append to a more relevant node?
+		this.fireCursorInterval(inputField);
 
-    this.setTextSize = function (size) {
-      this._output.style.fontSize = size
-      this._input.style.fontSize = size
-    }
+		// Print prompt message
+		if (message.length) {
+			var promptMsg = PROMPT_TYPE === PROMPT_CONFIRM ? message + ' (y/n)' : message;
+			this.print(promptMsg);
+		}
 
-    this.setTextColor = function (col) {
-      this.html.style.color = col
-      this._cursor.style.background = col
-    }
+		// Unfocusing from the terminal hides the cursor
+		inputField.onblur = () => { this.cursor.style.display = 'none'; }
 
-    this.setBackgroundColor = function (col) {
-      this.html.style.background = col
-    }
+		// Interaction with the input shows the cursor
+		inputField.onfocus = () => {
+			inputField.value = this.inputLine.textContent;
+			this.cursor.style.display = 'inline';
+		}
 
-    this.setWidth = function (width) {
-      this.html.style.width = width
-    }
+		// Clicking the terminal focuses the input field
+		this.window.onclick = () => { inputField.focus(); }
 
-    this.setHeight = function (height) {
-      this.html.style.height = height
-    }
+		// Handle user typing input
+		inputField.onkeydown = (e) => {
+			if (e.keyCode === KEY_LEFT || e.keyCode === KEY_RIGHT || 
+				e.keyCode === KEY_UP || e.keyCode === KEY_DOWN || e.keyCode === KEY_TAB) {
+				// Prevent normal behavior of key... handling it properly is too much effort
+				e.preventDefault()
+				// TODO: Handle UP/DOWN message history
+				// TODO: Tab completion interaction with terminal/system commands + local files
+			} else if (shouldDisplayInput && e.keyCode !== KEY_ENTER) {
+				setTimeout(() => {
+					this.inputLine.textContent = inputField.value
+				}, 1)
+			}
+		}
+		// Handle user submitting their text
+		inputField.onkeyup = (e) => {
+			if (PROMPT_TYPE === PROMPT_CONFIRM || e.keyCode === KEY_ENTER) {
+				this.input.style.display = 'none';
+				var inputValue = inputField.value;
+				// Log what the user entered
+				if (shouldDisplayInput) {
+					this.print(inputValue);
+				}
+				// Remove input
+				targetFieldHost.removeChild(inputField);
+				// Execute callback
+				if (typeof (callback) === 'function') {
+					if (PROMPT_TYPE === PROMPT_CONFIRM) {
+						callback(inputValue.toUpperCase()[0] === 'Y' ? true : false)
+					} else {
+						callback(inputValue);
+					}
+				}
+			}
+		}
 
-    this.blinkingCursor = function (bool) {
-      bool = bool.toString().toUpperCase()
-      this._shouldBlinkCursor = (bool === 'TRUE' || bool === '1' || bool === 'YES')
-    }
+		// Focus the input field
+		if (this.isFirstPrompt) {
+			this.isFirstPrompt = false
+			setTimeout(() => { inputField.focus(); }, 50);
+		} else {
+			inputField.focus();
+		}
+	}
 
-    this._input.appendChild(this._inputLine)
-    this._input.appendChild(this._cursor)
-    this._innerWindow.appendChild(this._output)
-    this._innerWindow.appendChild(this._input)
-    this.html.appendChild(this._innerWindow)
+	fireCursorInterval(inputField) {
+		setTimeout(() => {
+			if (inputField.parentElement && this.blinkingEnabled) {
+				this.cursor.style.visibility = this.cursor.style.visibility === 'visible' ? 'hidden' : 'visible';
+				this.fireCursorInterval(inputField);
+			} else {
+				this.cursor.style.visibility = 'visible';
+			}
+		}, BLINK_MS);
+	}
 
-    this.setBackgroundColor('black')
-    this.setTextColor('white')
-    this.setTextSize('1em')
-    this.setWidth('100%')
-    this.setHeight('100%')
+	clear() { this.output.innerHTML = ''; }
 
-    this.html.style.fontFamily = 'monospace'
-    this.html.style.margin = '0'
-    this._innerWindow.style.padding = '10px'
-    this._input.style.margin = '0'
-    this._output.style.margin = '0'
-    this._cursor.style.background = 'white'
-    this._cursor.innerHTML = 'C' //put something in the cursor..
-    this._cursor.style.display = 'none' //then hide it
-    this._input.style.display = 'none'
-  }
-  return TerminalConstructor;
-}())
+	set setCursorBlink(blink) { this.blinkingEnabled = blink; }
+	set setTextColor(color) {
+		this.contentWrapper.style.color = color;
+		this.cursor.style.background = color;
+	}
+	set setTextFont(font) { this.contentWrapper.style.fontFamily = font; }
+	set setBackgroundColor(color) { this.contentWrapper.style.background = color; }
+}
