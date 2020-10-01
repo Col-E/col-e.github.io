@@ -140,41 +140,47 @@ class TerminalWindow extends Window {
 	confirm(message, callback)	{ this.promptInput(message, PROMPT_CONFIRM, callback); }
 	
 	promptInput(message, PROMPT_TYPE, callback) {
-		var shouldDisplayInput = (PROMPT_TYPE === PROMPT_INPUT);
-		var targetFieldHost = this.window;
-		var inputField = document.createElement('input');
-		inputField.style.position = 'absolute';
-		inputField.style.zIndex = '-100';
-		inputField.style.outline = 'none';
-		inputField.style.border = 'none';
-		inputField.style.opacity = '0';
-		inputField.style.fontSize = '12px';
-		// Setup the hidden input
-		this.inputLine.textContent = '';
-		this.input.display = 'block';
-		targetFieldHost.appendChild(inputField); // TODO: Can we append to a more relevant node?
-		this.fireCursorInterval(inputField);
-
 		// Print prompt message
 		if (message.length) {
 			var promptMsg = PROMPT_TYPE === PROMPT_CONFIRM ? message + ' (y/n)' : message;
 			this.print(promptMsg);
 		}
+		
+		var shouldDisplayInput = (PROMPT_TYPE === PROMPT_INPUT);
+		var targetFieldHost = this.window;
+		// Setup the hidden input field
+		if (this.inputField == null) {
+			this.input.style.display = 'block';
+			this.inputField = document.createElement('input');
+			this.inputField.style.position = 'absolute';
+			this.inputField.style.zIndex = '-100';
+			this.inputField.style.outline = 'none';
+			this.inputField.style.border = 'none';
+			this.inputField.style.opacity = '0';
+			this.inputField.style.fontSize = '12px';
+			this.inputLine.textContent = '';
+			targetFieldHost.appendChild(this.inputField); // TODO: Can we append to a more relevant node?
+			this.fireCursorInterval(this.inputField);
+		} else {
+			this.input.style.display = 'block';
+			this.input.style.visibility = 'visible';
+			return;
+		}
 
 		// Unfocusing from the terminal hides the cursor
-		inputField.onblur = () => { this.cursor.style.display = 'none'; }
+		this.inputField.onblur = () => { this.cursor.style.display = 'none'; }
 
 		// Interaction with the input shows the cursor
-		inputField.onfocus = () => {
-			inputField.value = this.inputLine.textContent;
+		this.inputField.onfocus = () => {
+			this.inputField.value = this.inputLine.textContent;
 			this.cursor.style.display = 'inline';
 		}
 
 		// Clicking the terminal focuses the input field
-		this.window.onclick = () => { inputField.focus(); }
+		this.window.onclick = () => { this.inputField.focus(); }
 
 		// Handle user typing input
-		inputField.onkeydown = (e) => {
+		this.inputField.onkeydown = (e) => {
 			if (e.keyCode === KEY_LEFT || e.keyCode === KEY_RIGHT || 
 				e.keyCode === KEY_UP || e.keyCode === KEY_DOWN || e.keyCode === KEY_TAB) {
 				// Prevent normal behavior of key... handling it properly is too much effort
@@ -183,21 +189,20 @@ class TerminalWindow extends Window {
 				// TODO: Tab completion interaction with terminal/system commands + local files
 			} else if (shouldDisplayInput && e.keyCode !== KEY_ENTER) {
 				setTimeout(() => {
-					this.inputLine.textContent = inputField.value
+					this.inputLine.textContent = this.inputField.value
 				}, 1)
 			}
 		}
 		// Handle user submitting their text
-		inputField.onkeyup = (e) => {
+		this.inputField.onkeyup = (e) => {
 			if (PROMPT_TYPE === PROMPT_CONFIRM || e.keyCode === KEY_ENTER) {
-				this.input.style.display = 'none';
-				var inputValue = inputField.value;
+				var inputValue = this.inputField.value;
+				// Clear content
+				this.clearInput();
 				// Log what the user entered
 				if (shouldDisplayInput) {
 					this.print(inputValue);
 				}
-				// Remove input
-				targetFieldHost.removeChild(inputField);
 				// Execute callback
 				if (typeof (callback) === 'function') {
 					if (PROMPT_TYPE === PROMPT_CONFIRM) {
@@ -212,9 +217,9 @@ class TerminalWindow extends Window {
 		// Focus the input field
 		if (this.isFirstPrompt) {
 			this.isFirstPrompt = false
-			setTimeout(() => { inputField.focus(); }, 50);
+			setTimeout(() => { this.inputField.focus(); }, 50);
 		} else {
-			inputField.focus();
+			this.inputField.focus();
 		}
 	}
 
@@ -230,6 +235,11 @@ class TerminalWindow extends Window {
 	}
 
 	clear() { this.output.innerHTML = ''; }
+	clearInput() { 
+		this.inputField.value = '';
+		this.inputLine.textContent = '';
+		this.input.style.display = 'none';
+	}
 
 	set setCursorBlink(blink) { this.blinkingEnabled = blink; }
 	set setTextColor(color) {

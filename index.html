@@ -4,6 +4,7 @@
 		<title>C:/Users/Matt</title>
 		<meta name="viewport" content="width=800">
 		<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+		<script src="https://rawgit.com/alfg/ping.js/master/dist/ping.min.js"></script>
 		<!-- Host setup does NOT like it when links are relative... -->
 		<script src="https://www.coley.software/js/terminal.js"></script>
 		<script src="https://www.coley.software/js/drag.js"></script>
@@ -16,6 +17,16 @@ html {
 	</head>
 	<body>	
 	</body>
+<script>
+function getFirstWord(str) {
+	let spaceIndex = str.indexOf(' ');
+	return spaceIndex === -1 ? str : str.substr(0, spaceIndex);
+}
+function getLastWord(str) {
+	let spaceIndex = str.lastIndexOf(' ');
+	return str.substr(spaceIndex + 1);
+}
+</script>
 <script>
 var today = new Date();
 var hour = today.getHours();
@@ -66,30 +77,63 @@ function init() {
 	terminal.print(" ");
 }
 
+function github() {
+	terminal.print("Redirecting to github...");
+	window.location = 'https://github.com/Col-E';
+}
+
 function help() {
 	terminal.printHtml("<b><u>Commands</u></b>");
-	terminal.printHtml(" ╠═╤ <u>github</u>");
-	terminal.print    (" ║ └ Opens the github directory");
-	terminal.printHtml(" ╚═╤ <u>help</u>");
-	terminal.print    ("   └ Prints recognized commands");
+	terminal.printHtml(" ╠═ <b>cls</b>       Clears the console");
+	terminal.printHtml(" ╠═ <b>github</b>    Opens the github directory");
+	terminal.printHtml(" ╠═ <b>help</b>      Prints recognized commands");
+	terminal.printHtml(" ╚═ <b>ping</b>      Ping a domain");
+}
+
+var p = new Ping();
+function ping(str) {
+	var url = getLastWord(str);
+	if (url == "ping") {
+		terminal.print("Pong!");
+		terminal.print(" ");
+	} else {
+		if (!url.includes("://")) {
+			url = "http://" + url;
+		}
+		p.ping(url, function(err, data) {
+			terminal.print("Reply in " + data + "ms");
+			if (err) {
+				terminal.print("╚═ Error: " + err);
+			}
+			terminal.print(" ");
+		});
+	}
 }
 
 function loop() {
 	terminal.prompt("", function (input) {
 		terminal.print(" ");
-		switch(input) {
+		var threaded = false;
+		switch(getFirstWord(input)) {
+		case "clear":
+		case "cls":
+			terminal.clear();
+			break;
 		case "github":
-			terminal.print("Redirecting to github...");
-			window.location = 'https://github.com/Col-E';
+			github();
 			break;
 		case "help":
 			help();
+			break;
+		case "ping":
+			threaded = true;
+			ping(input);
 			break;
 		default:
 			terminal.print("'" + input + "' is not recognizes as an internal or external command.");
 			break;
 		}
-		terminal.print(" ");
+		if (!threaded) { terminal.print(" "); }
 		loop();
 	});
 }
