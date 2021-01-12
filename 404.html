@@ -4,10 +4,12 @@
 		<title>404: Page not found</title>
 		<meta name="viewport" content="width=800">
 		<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-		<!-- Host setup does NOT like it when links are relative... -->
-		<script src="https://www.coley.software/js/terminal.js"></script>
-		<script src="https://www.coley.software/js/drag.js"></script>
-		<link rel="stylesheet" href="https://www.coley.software/css/wincmd.css">
+		<base href="https://www.coley.software/" target="_blank">
+		<script src="js/utils.js"></script>
+		<script src="js/commands.js"></script>
+		<script src="js/terminal.js"></script>
+		<script src="js/drag.js"></script>
+		<link rel="stylesheet" href="css/wincmd.css">
 		<style>
 html { 
 	background-color: rgb(40, 41, 43);  /* #28292b */
@@ -24,7 +26,7 @@ document.body.appendChild(terminal.window);
 dragElement(terminal.window)
 terminal.setMinWidth = "420px";
 terminal.setTitle = "C:\\Windows\\system32\\cmd.exe";
-terminal.setIcon("https://www.coley.software/css/assets/cmd.svg", '20px', null, '5px');
+terminal.setIcon("css/assets/cmd.svg", '20px', null, '5px');
 
 function init() {
 	terminal.print    ("    ██╗  ██╗ ██████╗ ██╗  ██╗");
@@ -34,35 +36,18 @@ function init() {
 	terminal.print    ("         ██║╚██████╔╝     ██║");
 	terminal.print    ("         ╚═╝ ╚═════╝      ╚═╝");
 	terminal.printHtml("         <b><u>Page not found</u></b>");
-	terminal.print    ("The specified page does not exist.");
+	s.commands.register(new Command(["help"], "Shows information about the system", {}, (args) => { 
+		terminal.printHtml("The current page is <span style=\"color:red\">unavailable</span>...<br>Enter <i><a href=\"/\">\"home\"</a></i> command to go home");
+	}));
+	s.commands.register(new Command(["home"], "Go to the home page", {}, (args) => { 
+		terminal.print("Redirecting to root...");
+		window.location = '/';
+	}));
+	s.commands.exec("help");
 	terminal.print(" ");
-	help();
-	terminal.print(" ");
+	terminal.loopInput();
 }
 
-function help() {
-	terminal.printHtml("<b><u>Commands</u></b>");
-	terminal.printHtml(" ╚═╤ <u>home</u>");
-	terminal.print    ("   └ Opens the root directory");
-}
-
-function loop() {
-	terminal.prompt("", function (input) {
-		terminal.print(" ");
-		switch(input) {
-		case "home":
-			terminal.print("Redirecting to root...");
-			window.location = '/';
-			break;
-		default:
-			terminal.print("'" + input + "' is not recognizes as an internal or external command.");
-			break;
-		}
-		terminal.print(" ");
-		loop();
-	});
-}
 init();
-loop();
 </script>
 </html>

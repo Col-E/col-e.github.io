@@ -5,10 +5,12 @@
 		<meta name="viewport" content="width=800">
 		<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
 		<script src="https://rawgit.com/alfg/ping.js/master/dist/ping.min.js"></script>
-		<!-- Host setup does NOT like it when links are relative... -->
-		<script src="https://www.coley.software/js/terminal.js"></script>
-		<script src="https://www.coley.software/js/drag.js"></script>
-		<link rel="stylesheet" href="https://www.coley.software/css/wincmd.css">
+		<base href="https://www.coley.software/" target="_blank">
+		<script src="js/utils.js"></script>
+		<script src="js/commands.js"></script>
+		<script src="js/terminal.js"></script>
+		<script src="js/drag.js"></script>
+		<link rel="stylesheet" href="css/wincmd.css">
 		<style>
 html { 
 	background-color: rgb(40, 41, 43);
@@ -17,16 +19,6 @@ html {
 	</head>
 	<body>	
 	</body>
-<script>
-function getFirstWord(str) {
-	let spaceIndex = str.indexOf(' ');
-	return spaceIndex === -1 ? str : str.substr(0, spaceIndex);
-}
-function getLastWord(str) {
-	let spaceIndex = str.lastIndexOf(' ');
-	return str.substr(spaceIndex + 1);
-}
-</script>
 <script>
 var today = new Date();
 var hour = today.getHours();
@@ -41,6 +33,7 @@ var yyyy = today.getFullYear();
 today = hr + ":" + mn + " - " + mm + '/' + dd + '/' + yyyy;
 
 
+var p = new Ping();
 var s = new System();
 var t = new Terminal(s);
 var terminal = new TerminalWindow("index", t);
@@ -73,71 +66,63 @@ function init() {
 	terminal.printHtml("<b><u>Logged in as</u>:</b> Matt Coley");
 	terminal.printHtml("<b><u>Last login</u>:  </b> " + today);
 	terminal.print(" ");
-	help();
-	terminal.print(" ");
-}
-
-function github() {
-	terminal.print("Redirecting to github...");
-	window.location = 'https://github.com/Col-E';
-}
-
-function help() {
-	terminal.printHtml("<b><u>Commands</u></b>");
-	terminal.printHtml(" ╠═ <b>cls</b>       Clears the console");
-	terminal.printHtml(" ╠═ <b>github</b>    Opens the github directory");
-	terminal.printHtml(" ╠═ <b>help</b>      Prints recognized commands");
-	terminal.printHtml(" ╚═ <b>ping</b>      Ping a domain");
-}
-
-var p = new Ping();
-function ping(str) {
-	var url = getLastWord(str);
-	if (url == "ping") {
-		terminal.print("Pong!");
-		terminal.print(" ");
-	} else {
-		if (!url.includes("://")) {
-			url = "http://" + url;
-		}
-		p.ping(url, function(err, data) {
-			terminal.print("Reply in " + data + "ms");
-			if (err) {
-				terminal.print("╚═ Error: " + err);
+	s.commands.register(new Command(["help"], "Shows recognized commands", {}, (args) => { 
+		terminal.printHtml("<b><u>Commands</u></b>");
+		var used = [];
+		var max = 0, i = 0;
+		for (const [key, value] of Object.entries(s.commands.commandMap)) {
+			var name = value.aliases[0];
+			if (!used.includes(name)) {
+				used.push(name);
+				max++;
 			}
+		}
+		var width = 21;
+		for (const [index, key] of Object.entries(used)) {
+			var prefix = (i < max - 1) ? " ╠═ " : " ╚═ ";
+			var str = prefix + "<b>" + key + "</b>";
+			while (str.length < width) {
+				str += " ";
+			}
+			str += s.commands.commandMap[key].description;
+			terminal.printHtml(str);
+			i++;
+		}
+	}));
+	s.commands.register(new Command(["cls"], "Clear the terminal", {}, (args) => { 
+		terminal.clear();
+	}));
+	s.commands.register(new Command(["ping"], "Ping a domain", {"threaded":true}, (args) => {
+		if (args == undefined) {
+			terminal.print("Missing argument: <domain>");
+			return;
+		}
+		var url = args[0];
+		if (url == "ping") {
+			terminal.print("Pong!");
 			terminal.print(" ");
-		});
-	}
+		} else {
+			if (!url.includes("://")) {
+				url = "http://" + url;
+			}
+			p.ping(url, function(err, data) {
+				terminal.print("Reply in " + data + "ms");
+				if (err) {
+					terminal.print("╚═ Error: " + err);
+				}
+				terminal.print(" ");
+			});
+		}
+	}));
+	s.commands.register(new Command(["github"], "Open my github profile", {}, (args) => {
+		terminal.print("Redirecting to github...");
+		window.location = 'https://github.com/Col-E';
+	}));
+	s.commands.exec("help");
+	terminal.print(" ");
+	terminal.loopInput();
 }
 
-function loop() {
-	terminal.prompt("", function (input) {
-		terminal.print(" ");
-		var threaded = false;
-		switch(getFirstWord(input)) {
-		case "clear":
-		case "cls":
-			terminal.clear();
-			break;
-		case "github":
-			github();
-			break;
-		case "help":
-			help();
-			break;
-		case "ping":
-			threaded = true;
-			ping(input);
-			break;
-		default:
-			terminal.print("'" + input + "' is not recognizes as an internal or external command.");
-			break;
-		}
-		if (!threaded) { terminal.print(" "); }
-		loop();
-	});
-}
 init();
-loop();
 </script>
 </html>

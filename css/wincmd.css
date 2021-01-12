@@ -10,6 +10,11 @@ a {
 	color: rgb(100, 170, 252);
 }
 /* ================================== */
+/* Limit how big terminal can get vertically */
+.terminal .resizable pre {
+	max-height: 455px;
+}
+/* ================================== */
 .resizable {
 	overflow: scroll;
 	resize: both;

@@ -19,7 +19,11 @@ const KEY_ENTER = 13,
 	KEY_RIGHT = 39;
 
 // OS stuff
-class System {}
+class System {
+	constructor() {
+		this.commands = new CommandManager();
+	}
+}
 
 // Interaction with a given system
 class Terminal {
@@ -112,7 +116,7 @@ class TerminalWindow extends Window {
 		this.contentWrapper.className = 'resizable';
 		this.inputLine = document.createElement('span');
 		this.cursor = document.createElement('span');
-		this.cursor.innerHTML = '0';
+		this.cursor.innerHTML = '#';
 		this.cursor.style.display = 'none';
 		this.input.appendChild(this.inputLine);
 		this.input.appendChild(this.cursor);
@@ -127,6 +131,10 @@ class TerminalWindow extends Window {
 		var newLine = document.createElement('div');
 		newLine.textContent = message;
 		this.output.appendChild(newLine);
+		this.contentWrapper.scrollTop = this.contentWrapper.scrollHeight;
+		setTimeout(() => {
+			this.contentWrapper.scrollTop = this.contentWrapper.scrollHeight;
+		}, 100);
 	}
 
 	printHtml(message) {
@@ -138,6 +146,21 @@ class TerminalWindow extends Window {
 	prompt(message, callback)	{ this.promptInput(message, PROMPT_INPUT, callback); }
 	password(message, callback) { this.promptInput(message, PROMPT_PASSWORD, callback); }
 	confirm(message, callback)	{ this.promptInput(message, PROMPT_CONFIRM, callback); }
+	
+	loopInput() {
+		this.prompt("", (input) => {
+			this.print(" ");
+			var cmd = this.terminal.sys.commands.commandMap[getFirstWord(input)];
+			if (cmd != undefined) {
+				var threaded = (cmd.attributes["threaded"] != undefined);
+				this.terminal.sys.commands.exec(input);
+				if (!threaded) { this.print(" "); }
+			} else {
+				this.print("'" + input + "' is not recognizes as an internal or external command.");
+			}
+			this.loopInput();
+		});
+	}
 	
 	promptInput(message, PROMPT_TYPE, callback) {
 		// Print prompt message
