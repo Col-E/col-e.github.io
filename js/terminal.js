@@ -34,7 +34,7 @@ class Terminal {
 
 // Base window logic 
 class Window {
-	constructor(id, cls) {
+	constructor(id, className) {
 		if (typeof(id) === 'string') {
 			this.id = id;
 		}
@@ -58,7 +58,7 @@ class Window {
 		this.contentWrapper.className = "content";
 		// Setup main window wrapper element
 		this.window = document.createElement('div');
-		this.window.className = cls;
+		this.window.className = className;
 		this.window.id = id;
 		this.window.appendChild(this.header);
 		this.window.appendChild(this.contentWrapper);
@@ -94,6 +94,12 @@ class Window {
 	set setMinHeight(size) { 
 		this.window.style.minHeight = size;
 		this.contentWrapper.style.minWidth = size;
+	}
+}
+
+class VideoWindow extends Window {
+	constructor(id) {
+		super(id, "video-window");
 	}
 }
 

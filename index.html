@@ -19,6 +19,7 @@ html {
 	</head>
 	<body>	
 	</body>
+	<iframe id="video" width="560" height="315" src="" frameborder="0" allow="autoplay" style="background: black; height: 0px;"></iframe>
 <script>
 var today = new Date();
 var hour = today.getHours();
@@ -117,6 +118,69 @@ function init() {
 	s.commands.register(new Command(["github"], "Open my github profile", {}, (args) => {
 		terminal.print("Redirecting to github...");
 		window.location = 'https://github.com/Col-E';
+	}));
+	s.commands.register(new Command(["music"], "Play a playlist", {}, (args) => {
+		var genres = new Map();
+		genres.set("alt-metal", "PLA1gMJMsXXsNtrumdiazaS5MYdWi6gyxL");
+		genres.set("alt-rock", "PLA1gMJMsXXsNmciq74MzQ8Elfl6J0y9h-");
+		genres.set("drum-and-bass", "PLA1gMJMsXXsP1u9hHFgxv933VltBFbiJU");
+		genres.set("dubstep", "PLA1gMJMsXXsNNAFNX5FqHiVXK18I_X5Pv");
+		genres.set("electronic", "PLA1gMJMsXXsPUpKjNV8GlJ0-zkW-JGA-W");
+		genres.set("electronic-rock", "PLA1gMJMsXXsPFsQCUXuYoy2rDn5xXh6PL");
+		genres.set("hard-rock", "PLA1gMJMsXXsOG0Q6uM5A4p-7HBVFmoFXD");
+		genres.set("industrial", "PLA1gMJMsXXsO19nxEys7m4rqK5yXklavb");
+		genres.set("metal", "PLA1gMJMsXXsM6SjFgioLajI3XV01JkQPd");
+		genres.set("metalcore", "PLA1gMJMsXXsN4nHT90ig7aHlgpbGd39xt");
+		genres.set("pop-rock", "PLA1gMJMsXXsO40YlcuKy_Q9VPzRxw6EkQ");
+		genres.set("prog-metal", "PLA1gMJMsXXsN6cBzPfVr8bVC50eU6Lhqq");
+		genres.set("punk-rock", "PLA1gMJMsXXsNqXdPyXc6RCwHFkxDq4Fjd");
+		genres.set("rock", "PLA1gMJMsXXsOPTk_bH_LdKN-NrdNUjbre");
+		genres.set("synthwave", "PLA1gMJMsXXsPPCS5F-PV-YGPFWV6ENRYb");
+		genres.set("thrash", "PLA1gMJMsXXsOBCYxvCE_k9869yquASMjB");
+		genres.set("deathcore", "PLA1gMJMsXXsPnAe-c8O32Dn1ga-lJ0r0f");
+		if (args == undefined) {
+			terminal.print("Missing argument: <genre>");
+			for (let [key, value] of genres) {
+				terminal.print(" - " + key);
+			}
+			return;
+		} else if (!genres.has(args[0])) {
+			terminal.print("Unknown genre! Available options:");
+			for (let [key, value] of genres) {
+				terminal.print(" - " + key);
+			}
+			return;
+		}
+		var genre = args[0];
+		var videoFrame = document.getElementById("video");
+		var musicWindow = document.getElementById("music-window");
+		var titleId = "music-title";
+		if (musicWindow == undefined) {
+			musicWindow = new VideoWindow("music-window", t);
+			musicWindow.contentWrapper.innerHtml = "<div style=\"background: black; width: 100%; height: 100%;\"></div>";
+			document.body.appendChild(musicWindow.window);
+			dragElement(musicWindow.window)
+			musicWindow.setMinWidth = "420px";
+			musicWindow.setIcon("css/assets/cmd.svg", '20px', null, '5px');
+			// Set the id so we can refer to it again later. 
+			// The VideoWindow instance is not what is loaded the second time around.
+			musicWindow.headerText.id = titleId; 
+			// Move iframe to window
+			videoFrame.style = "background: black;";
+			videoFrame.remove();
+			musicWindow.contentWrapper.appendChild(videoFrame);
+		}
+		// Update player window title
+		document.getElementById(titleId).innerText = "C:\\YouTube.exe -genre " + genre;
+		// Updating the frame src will cause the video to play
+		var list = genres.get(genre);
+		for (const [index, item, list] of Object.entries(genres)) {
+			if (index > genres.length - 2) {
+				break;
+			}
+			terminal.print(" - " + item[0]);
+		}
+		videoFrame.src = "http://www.youtube.com/embed/videoseries?list=" + list + "&autohide=1&autoplay=1";
 	}));
 	s.commands.exec("help");
 	terminal.print(" ");
