@@ -45,7 +45,7 @@ textarea:focus {
   <textarea id="b64in" placeholder="<Type/paste input text here>" spellcheck="false"></textarea>
   <h3>Base64</h3>
   <textarea id="b64out" placeholder="<Type/paste base64 text here>" spellcheck="false"></textarea>
-  <script>
+  <script>(function() {
   var input = document.getElementById('b64in');
   var output = document.getElementById('b64out');
   input.addEventListener('input', () => {
@@ -59,14 +59,14 @@ textarea:focus {
 	  output.style.borderColor = 'red';
 	}
   })
-  </script>
+  })();</script>
 </div>
 <div id="sortlines" class="tabcontent">
   <h3>Input</h3>
   <textarea id="sort_in" placeholder="<Unsorted lines go here>" spellcheck="false"></textarea>
   <h3>Sorted</h3>
   <textarea id="sort_out" placeholder="<Sorted lines appear here>" spellcheck="false"></textarea>
-  <script>
+  <script>(function() {
   var input = document.getElementById('sort_in');
   var output = document.getElementById('sort_out');
   input.addEventListener('input', () => {
@@ -74,14 +74,14 @@ textarea:focus {
 	lines.sort();
     output.value = lines.join('\n');
   });
-  </script>
+  })();</script>
 </div>
 <div id="dedupelines" class="tabcontent">
   <h3>Input</h3>
   <textarea id="dedupe_in" placeholder="<Lines go here>" spellcheck="false"></textarea>
   <h3>Sorted</h3>
   <textarea id="dedupe_out" placeholder="<Lines without duplicates here>" spellcheck="false"></textarea>
-  <script>
+  <script>(function() {
   var input = document.getElementById('dedupe_in');
   var output = document.getElementById('dedupe_out');
   input.addEventListener('input', () => {
@@ -89,7 +89,7 @@ textarea:focus {
 	var dedupe = [...new Set(lines)];
     output.value = dedupe.join('\n');
   });
-  </script>
+  })();</script>
 </div> 
 	</body>
 	<script>
