@@ -119,6 +119,10 @@ function init() {
 		terminal.print("Redirecting to github...");
 		window.location = 'https://github.com/Col-E';
 	}));
+	s.commands.register(new Command(["tools"], "Open the tools page", {}, (args) => {
+		terminal.print("Redirecting to tools...");
+		window.location = 'tools.html';
+	}));
 	s.commands.register(new Command(["music"], "Play a playlist", {}, (args) => {
 		var genres = new Map();
 		genres.set("alt-metal", "PLA1gMJMsXXsNtrumdiazaS5MYdWi6gyxL");

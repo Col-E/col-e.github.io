@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Tools</title>
+		<meta name="viewport" content="width=800">
+		<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+		<link rel="stylesheet" href="css/tabs.css">
+		<script src="js/utils.js"></script>
+		<script src="js/tabs.js"></script>
+		<style>
+* {
+  font-family: Arial;
+  color: white;
+}
+html { 
+  background-color: rgb(40, 41, 43);
+}
+textarea {
+  font-family: monospaced;
+  border-color: rgb(62, 68, 70);
+  background-color: rgb(34, 36, 38);
+  width: 100%;
+  resize: vertical;
+  white-space: break-spaces;
+  word-break: break-all;
+  box-sizing: border-box;
+  min-height: 220px;
+}
+input:focus {
+  outline: none !important;
+}
+textarea:focus { 
+  outline: none !important;
+}
+		</style>
+	</head>
+	<body>
+		<div id="tab-bar" class="tab">
+		  <button class="tablinks" onclick="openTab(event, 'base64')">Base64</button>
+		  <button class="tablinks" onclick="openTab(event, 'sortlines')">Sort Lines</button>
+		  <button class="tablinks" onclick="openTab(event, 'dedupelines')">Remove Duplicate Lines</button>
+		</div>
+<div id="base64" class="tabcontent">
+  <h3>Cleartext</h3>
+  <textarea id="b64in" placeholder="<Type/paste input text here>" spellcheck="false"></textarea>
+  <h3>Base64</h3>
+  <textarea id="b64out" placeholder="<Type/paste base64 text here>" spellcheck="false"></textarea>
+  <script>
+  var input = document.getElementById('b64in');
+  var output = document.getElementById('b64out');
+  input.addEventListener('input', () => {
+    output.value = btoa(input.value);
+  });
+  output.addEventListener('input', () => {
+    try {
+	  input.value = atob(output.value);
+	  output.style.borderColor = 'rgb(62, 68, 70)';
+	} catch (e) {
+	  output.style.borderColor = 'red';
+	}
+  })
+  </script>
+</div>
+<div id="sortlines" class="tabcontent">
+  <h3>Input</h3>
+  <textarea id="sort_in" placeholder="<Unsorted lines go here>" spellcheck="false"></textarea>
+  <h3>Sorted</h3>
+  <textarea id="sort_out" placeholder="<Sorted lines appear here>" spellcheck="false"></textarea>
+  <script>
+  var input = document.getElementById('sort_in');
+  var output = document.getElementById('sort_out');
+  input.addEventListener('input', () => {
+    var lines = input.value.split(/\r?\n/);
+	lines.sort();
+    output.value = lines.join('\n');
+  });
+  </script>
+</div>
+<div id="dedupelines" class="tabcontent">
+  <h3>Input</h3>
+  <textarea id="dedupe_in" placeholder="<Lines go here>" spellcheck="false"></textarea>
+  <h3>Sorted</h3>
+  <textarea id="dedupe_out" placeholder="<Lines without duplicates here>" spellcheck="false"></textarea>
+  <script>
+  var input = document.getElementById('dedupe_in');
+  var output = document.getElementById('dedupe_out');
+  input.addEventListener('input', () => {
+    var lines = input.value.split(/\r?\n/);
+	var dedupe = [...new Set(lines)];
+    output.value = dedupe.join('\n');
+  });
+  </script>
+</div> 
+	</body>
+	<script>
+	    // Open first tab by default
+		document.getElementsByTagName('button')[0].click()
+	</script>
+</html>
