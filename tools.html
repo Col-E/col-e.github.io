@@ -32,6 +32,9 @@ input:focus {
 textarea:focus { 
   outline: none !important;
 }
+.smalltext {
+  min-height: 20px;
+}
 		</style>
 	</head>
 	<body>
@@ -39,6 +42,7 @@ textarea:focus {
 		  <button class="tablinks" onclick="openTab(event, 'base64')">Base64</button>
 		  <button class="tablinks" onclick="openTab(event, 'sortlines')">Sort Lines</button>
 		  <button class="tablinks" onclick="openTab(event, 'dedupelines')">Remove Duplicate Lines</button>
+		  <button class="tablinks" onclick="openTab(event, 'numconvert')">Num Converter</button>
 		</div>
 <div id="base64" class="tabcontent">
   <h3>Cleartext</h3>
@@ -90,7 +94,64 @@ textarea:focus {
     output.value = dedupe.join('\n');
   });
   })();</script>
-</div> 
+</div>
+<div id="numconvert" class="tabcontent">
+  <h3>Base 10: Decimal</h3>
+  <textarea class="smalltext" id="num10" placeholder="<Decimal number goes here>" spellcheck="false" onkeyup="this.value = this.value.replace(/[^0-9-]+|(?<=-|\w)-/g, '')"></textarea>
+  <h3>Base 16: Hexadecimal</h3>
+  <textarea class="smalltext" id="num16" placeholder="<Hex number goes here>" spellcheck="false" onkeyup="this.value = this.value.replace(/[^0-9-a-fA-F]+|(?<=-|\w)-/g, '')"></textarea>
+  <h3>Base 2: Binary</h3>
+  <p><input type="checkbox" id="twoscompl"> Interpret input as two's complement</p>
+  <textarea class="smalltext" id="num2" placeholder="<Binary number goes here>" spellcheck="false" onkeyup="this.value = this.value.replace(/[^01-]+|(?<=-|\w)-/g, '')"></textarea>
+  <script>(function() {
+  var in2 = document.getElementById('num2');
+  var in10 = document.getElementById('num10');
+  var in16 = document.getElementById('num16');
+  var twosComplement = document.getElementById('twoscompl');
+  in10.addEventListener('input', () => {
+	try {
+	  var s = in10.value;
+	  var n = Number(s) >>> 0;
+	  in2.value =  n.toString(2);
+	  in16.value = n.toString(16);
+	  in10.style.borderColor = 'rgb(62, 68, 70)';
+	} catch (e) {
+	  in10.style.borderColor = 'red';
+	}
+  });
+  in16.addEventListener('input', () => {
+	try {
+	  var s = in16.value;
+	  var decimal = parseInt(s, 16);
+	  var n = Number(decimal);
+	  in2.value = n.toString(2);
+	  in10.value = decimal;
+	  in16.style.borderColor = 'rgb(62, 68, 70)';
+	} catch (e) {
+	  in16.style.borderColor = 'red';
+	}
+  });
+  in2.addEventListener('input', () => {
+	try {
+	  var s = in2.value;
+	  var decimal = parseInt(s, 2);
+	  if (twosComplement.checked && s.length > 0 && s[0] == '1') {
+	    var inverse = '';
+        for (let i = 0; i < s.length; i++) {
+            inverse += (s[i] === '0' ? '1' : '0');
+        }
+	    decimal = (parseInt(inverse, 2) + 1) * -1;
+	  }
+	  var n = Number(decimal);
+	  in16.value = n.toString(16);
+	  in10.value = decimal;
+	  in2.style.borderColor = 'rgb(62, 68, 70)';
+	} catch (e) {
+	  in2.style.borderColor = 'red';
+	}
+  });
+  })();</script>
+</div>
 	</body>
 	<script>
 	    // Open first tab by default
