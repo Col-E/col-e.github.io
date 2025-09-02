@@ -43,6 +43,7 @@ textarea:focus {
 		  <button class="tablinks" onclick="openTab(event, 'sortlines')">Sort Lines</button>
 		  <button class="tablinks" onclick="openTab(event, 'dedupelines')">Remove Duplicate Lines</button>
 		  <button class="tablinks" onclick="openTab(event, 'numconvert')">Num Converter</button>
+		  <button class="tablinks" onclick="openTab(event, 'xorstr')">XOR Strings</button>
 		</div>
 <div id="base64" class="tabcontent">
   <h3>Cleartext</h3>
@@ -150,6 +151,36 @@ textarea:focus {
 	  in2.style.borderColor = 'red';
 	}
   });
+  })();</script>
+</div>
+<div id="xorstr" class="tabcontent">
+  <h3>XOR: Input</h3>
+  <textarea class="smalltext" id="xorin" placeholder="xor input string" spellcheck="false"></textarea>
+  <h3>XOR: Output</h3>
+  <textarea class="smalltext" id="xorout" placeholder="xor output string" spellcheck="false" readonly></textarea>
+  <h3>XOR: Key</h3>
+  <textarea class="smalltext" id="xorkey" placeholder="xor key (binary number)" spellcheck="false" onkeyup="this.value = this.value.replace(/[^01-]+|(?<=-|\w)-/g, '')">1</textarea>
+  <script>(function() {
+  var xorin = document.getElementById('xorin');
+  var xorout = document.getElementById('xorout');
+  var xorkey = document.getElementById('xorkey');
+  function update() {
+	try {
+	  var output = "";
+	  var input = xorin.value;
+	  var key = parseInt(xorkey.value, 2 );
+	  
+      for (let i = 0; i < input.length; i++) {
+        output += String.fromCharCode(input.charCodeAt(i) ^ key);
+      }
+	  
+	  xorout.value = output;
+	} catch (e) {
+	  xorin.style.borderColor = 'red';
+	}
+  }
+  xorin.addEventListener('input', () => { update(); });
+  xorkey.addEventListener('input', () => { update(); });
   })();</script>
 </div>
 	</body>
