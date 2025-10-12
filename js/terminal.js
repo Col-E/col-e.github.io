@@ -162,7 +162,7 @@ class TerminalWindow extends Window {
 				this.terminal.sys.commands.exec(input);
 				if (!threaded) { this.print(" "); }
 			} else {
-				this.print("'" + input + "' is not recognizes as an internal or external command.");
+				this.print("'" + input + "' is not recognized as an internal or external command.");
 			}
 			this.loopInput();
 		});
