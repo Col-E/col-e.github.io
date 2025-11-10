@@ -24,7 +24,7 @@ placeholder.outerHTML = "";
 var wrapper = document.createElement("div");
 wrapper.setAttribute("style", "background: black; position: absolute; width: 100%; height: 100%; top: 0; left: 0;");
 
-var videoList = "PLA1gMJMsXXsNtrumdiazaS5MYdWi6gyxL";
+var videoList = window.location.search;
 var videoFrame = document.createElement("iframe");
 videoFrame.setAttribute("src", "https://www.youtube.com/embed/videoseries?list=" + videoList + "&vf=6");
 videoFrame.setAttribute("width", "100%");
