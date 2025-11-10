@@ -13,21 +13,29 @@ html {
 		</style>
 	</head>
 	<body>	
+		<center id="placeholder"><h1>Please hold...</h1></center>
 	</body>
-	<!-- <iframe id="video" referrerpolicy='strict-origin-when-cross-origin' width="100%" height="100%" src="" frameborder="0" allow="autoplay" style="background: black; position: absolute; width: 100%; height: 100%; top: 0; left: 0;"></iframe> -->
 <script>
 function lateInit() {
 
+var placeholder = document.getElementById("placeholder");
+placeholder.outerHTML = "";
+
+var wrapper = document.createElement("div");
+wrapper.setAttribute("style", "width: 600px; height: 400px; margin: auto;");
+
 var videoList = window.location.search;
 var videoFrame = document.createElement("iframe");
-videoFrame.setAttribute("src", "https://www.youtube.com/embed/videoseries?list=" + videoList + "&autohide=1&autoplay=1");
+videoFrame.setAttribute("src", "https://www.youtube.com/embed/videoseries?list=" + videoList + "&autohide=1&autoplay=1&enablejsapi=1&origin=https://www.coley.software.com/&aoriginsup=1&gporigin=https://www.google.com/&vf=6");
 videoFrame.setAttribute("width", "100%");
 videoFrame.setAttribute("height", "100%");
 videoFrame.setAttribute("frameborder", "0");
+videoFrame.setAttribute("referrerpolicy", "strict-origin-when-cross-origin");
 videoFrame.setAttribute("allow", "autoplay");
-videoFrame.setAttribute("style", "background: black; position: absolute; width: 100%; height: 100%; top: 0; left: 0;");
 
-document.body.appendChild(videoFrame);
+wrapper.appendChild(videoFrame);
+
+document.body.appendChild(wrapper);
 
 }
 setTimeout(function() { lateInit(); }, 1000);
