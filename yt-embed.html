@@ -22,19 +22,16 @@ var placeholder = document.getElementById("placeholder");
 placeholder.outerHTML = "";
 
 var wrapper = document.createElement("div");
-wrapper.setAttribute("style", "width: 600px; height: 400px; margin: auto;");
+wrapper.setAttribute("style", "background: black; position: absolute; width: 100%; height: 100%; top: 0; left: 0;");
 
-var videoList = window.location.search;
+var videoList = "PLA1gMJMsXXsNtrumdiazaS5MYdWi6gyxL";
 var videoFrame = document.createElement("iframe");
-videoFrame.setAttribute("src", "https://www.youtube.com/embed/videoseries?list=" + videoList + "&autohide=1&autoplay=1&enablejsapi=1&origin=https://www.coley.software.com/&aoriginsup=1&gporigin=https://www.google.com/&vf=6");
+videoFrame.setAttribute("src", "https://www.youtube.com/embed/videoseries?list=" + videoList + "&vf=6");
 videoFrame.setAttribute("width", "100%");
 videoFrame.setAttribute("height", "100%");
 videoFrame.setAttribute("frameborder", "0");
-videoFrame.setAttribute("referrerpolicy", "strict-origin-when-cross-origin");
-videoFrame.setAttribute("allow", "autoplay");
 
 wrapper.appendChild(videoFrame);
-
 document.body.appendChild(wrapper);
 
 }
