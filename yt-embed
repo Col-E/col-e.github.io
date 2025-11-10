@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Music Player</title>
+		<meta name="viewport" content="width=800">
+		<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+		<base href="https://www.coley.software/" target="_blank">
+		<style>
+html { 
+	background-color: black;
+}
+		</style>
+	</head>
+	<body>	
+	</body>
+	<iframe id="video" width="100%" height="100%" src="" frameborder="0" allow="autoplay" style="background: black; position: absolute; width: 100%; height: 100%; top: 0; left: 0;"></iframe>
+<script>
+const videoList = window.location.search;
+var videoFrame = document.getElementById("video");
+videoFrame.src = "https://www.youtube.com/embed/videoseries?list=" + videoList + "&autohide=1&autoplay=1";
+</script>
+</html>
