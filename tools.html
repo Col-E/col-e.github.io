@@ -44,6 +44,8 @@ textarea:focus {
 		  <button class="tablinks" onclick="openTab(event, 'dedupelines')">Remove Duplicate Lines</button>
 		  <button class="tablinks" onclick="openTab(event, 'numconvert')">Num Converter</button>
 		  <button class="tablinks" onclick="openTab(event, 'xorstr')">XOR Strings</button>
+		  <button class="tablinks" onclick="openTab(event, 'json-pretty')">Prettify: JSON</button>
+		  <button class="tablinks" onclick="openTab(event, 'xml-pretty')">Prettify: XML</button>
 		</div>
 <div id="base64" class="tabcontent">
   <h3>Cleartext</h3>
@@ -183,6 +185,113 @@ textarea:focus {
   xorkey.addEventListener('input', () => { update(); });
   })();</script>
 </div>
+<div id="json-pretty" class="tabcontent">
+  <h3>Input</h3>
+  <textarea id="json_in" placeholder="<ugly json here>" spellcheck="false"></textarea>
+  <h3>Pretty</h3>
+  <textarea id="json_out" placeholder="<pretty json output>" spellcheck="false"></textarea>
+  <script>(function() {
+  var input = document.getElementById('json_in');
+  var output = document.getElementById('json_out');
+  input.addEventListener('input', () => {
+    var spaces = 2;
+	var json = input.value;
+    output.value = JSON.stringify(JSON.parse(json), null, spaces);
+  });
+  })();</script>
+</div>
+<div id="xml-pretty" class="tabcontent">
+  <h3>Input</h3>
+  <textarea id="xml_in" placeholder="<ugly xml here>" spellcheck="false"></textarea>
+  <h3>Pretty</h3>
+  <textarea id="xml_out" placeholder="<pretty xml output>" spellcheck="false"></textarea>
+  <script>
+  function prettyPrintXml(xml, indentSize = 2) {
+    const indentUnit =
+      typeof indentSize === "number" ? " ".repeat(indentSize) : String(indentSize);
+  
+    const compact = xml.replace(/>\s+</g, "><").trim();
+  
+    const tokens = compact.match(
+      /<\?[\s\S]*?\?>|<!--[\s\S]*?-->|<!\[CDATA\[[\s\S]*?\]\]>|<[^>]+>|[^<]+/g
+    );
+  
+    if (!tokens) return "";
+  
+    let depth = 0;
+    const lines = [];
+  
+    function isOpeningTag(token) {
+      return (
+        token.startsWith("<") &&
+        !token.startsWith("</") &&
+        !token.startsWith("<\?") &&
+        !token.startsWith("<!--") &&
+        !token.startsWith("<![CDATA[") &&
+        !token.startsWith("<!DOCTYPE") &&
+        !token.endsWith("/>")
+      );
+    }
+  
+    function isClosingTag(token) {
+      return token.startsWith("</");
+    }
+  
+    function isSpecialTag(token) {
+      return (
+        token.startsWith("<\?") ||
+        token.startsWith("<!--") ||
+        token.startsWith("<![CDATA[") ||
+        token.startsWith("<!DOCTYPE")
+      );
+    }
+  
+    for (let i = 0; i < tokens.length; i++) {
+      const token = tokens[i].trim();
+      if (!token) continue;
+  
+      const next = tokens[i + 1]?.trim();
+      const afterNext = tokens[i + 2]?.trim();
+  
+      // Keep <tag>text</tag> on one line.
+      if (
+        isOpeningTag(token) &&
+        next &&
+        afterNext &&
+        !next.startsWith("<") &&
+        isClosingTag(afterNext)
+      ) {
+        lines.push(indentUnit.repeat(depth) + token + next + afterNext);
+        i += 2;
+        continue;
+      }
+  
+      if (isClosingTag(token)) {
+        depth = Math.max(depth - 1, 0);
+        lines.push(indentUnit.repeat(depth) + token);
+        continue;
+      }
+  
+      lines.push(indentUnit.repeat(depth) + token);
+  
+      if (isOpeningTag(token) && !isSpecialTag(token)) {
+        depth++;
+      }
+    }
+  
+    return lines.join("\n");
+  }
+  
+  (function() {
+  var input = document.getElementById('xml_in');
+  var output = document.getElementById('xml_out');
+  input.addEventListener('input', () => {
+	var xml = input.value;
+    output.value = prettyPrintXml(xml);
+  });
+  })();</script>
+</div>
+
 	</body>
 	<script>
 	    // Open first tab by default
